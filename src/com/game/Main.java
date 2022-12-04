@@ -15,11 +15,10 @@ public class Main {
         Game game = new Game();
         Scanner in = new Scanner(System.in);
         String mode = in.next();
-        System.out.println(mode);
         if (mode.equals("computer")) {
             game.selectMode(true);
         }
-        if (mode.equals("player")) {
+        else if (mode.equals("player")) {
             game.selectMode(false);
         } else {
             System.out.println("Wrong_value");

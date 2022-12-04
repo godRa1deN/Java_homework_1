@@ -111,7 +111,6 @@ public class Game extends JComponent {
                 if (flag == true) {
                     i = possible_moves.get(0);
                     j = possible_moves.get(1);
-                    System.out.println(possible_moves);
                     field[i][j] = white;
                     fillLine(i, j, black, white);
                     possible_moves.clear();
