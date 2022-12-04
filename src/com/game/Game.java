@@ -6,15 +6,17 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class Game extends JComponent {
-    private final int empty = 0;
-    private final int black = 10;
-    private final int white = 200;
-    private static int count_black = 0;
-    private static int count_white = 0;
-    private static int[][] field;
-    private static final ArrayList<Integer> possible_moves = new ArrayList<>();
-    private static boolean is_black_turn;
-    private static boolean game_end;
+    public final int empty = 0;
+    public final int black = 10;
+    public final int white = 200;
+    public static int count_black = 0;
+    public static int count_white = 0;
+    public static int[][] field;
+    public static final ArrayList<Integer> possible_moves = new ArrayList<>();
+    public static boolean is_black_turn;
+    public static boolean game_end;
+    public static boolean computer;
+    public static boolean flag = false;
     //конструктор
     public Game() {
         enableEvents(AWTEvent.MOUSE_EVENT_MASK);
@@ -37,6 +39,9 @@ public class Game extends JComponent {
         ableToGo(3, 4, white);
         ableToGo(4, 3, white);
     }
+    public void selectMode(boolean mode) {
+        computer = mode;
+    }
     //рисуем
     @Override
     protected void paintComponent(Graphics graphics) {
@@ -46,7 +51,7 @@ public class Game extends JComponent {
     }
     //обработка клика мыши
     @Override
-    protected void processMouseEvent(MouseEvent mouseEvent) {
+    protected void processMouseEvent (MouseEvent mouseEvent) {
         super.processMouseEvent(mouseEvent);
         if (mouseEvent.getButton() == MouseEvent.BUTTON1 && !game_end) {
             int x = mouseEvent.getX();
@@ -67,23 +72,60 @@ public class Game extends JComponent {
                 }
                 endGame();
             }
-            for (int k = 0; k < possible_moves.size(); k += 2) {
-                if (i == possible_moves.get(k) && j == possible_moves.get(k + 1)) {
-                    field[i][j] = is_black_turn?black:white;
-                    fillLine(i, j, is_black_turn?white:black, is_black_turn?black:white);
-                    is_black_turn = !is_black_turn;
+            if (computer == false) {
+                for (int k = 0; k < possible_moves.size(); k += 2) {
+                    if (i == possible_moves.get(k) && j == possible_moves.get(k + 1)) {
+                        field[i][j] = is_black_turn ? black : white;
+                        fillLine(i, j, is_black_turn ? white : black, is_black_turn ? black : white);
+                        is_black_turn = !is_black_turn;
+                        possible_moves.clear();
+                        for (int l = 0; l < 8; l++) {
+                            for (int b = 0; b < 8; b++) {
+                                if (field[l][b] == (is_black_turn ? black : white)) {
+                                    ableToGo(l, b, is_black_turn ? white : black);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+                repaint();
+            } else {
+                for (int k = 0; k < possible_moves.size(); k += 2) {
+                    if (i == possible_moves.get(k) && j == possible_moves.get(k + 1)) {
+                        flag = true;
+                        field[i][j] = black;
+                        fillLine(i, j, white, black);
+                        is_black_turn = !is_black_turn;
+                        possible_moves.clear();
+                        for (int l = 0; l < 8; l++) {
+                            for (int b = 0; b < 8; b++) {
+                                if (field[l][b] == white) {
+                                    ableToGo(l, b, black);
+                                }
+                            }
+                        }
+                        repaint();
+                    }
+                }
+                if (flag == true) {
+                    i = possible_moves.get(0);
+                    j = possible_moves.get(1);
+                    System.out.println(possible_moves);
+                    field[i][j] = white;
+                    fillLine(i, j, black, white);
                     possible_moves.clear();
                     for (int l = 0; l < 8; l++) {
                         for (int b = 0; b < 8; b++) {
-                            if (field[l][b] == (is_black_turn?black:white)) {
-                                ableToGo(l, b, is_black_turn?white:black);
+                            if (field[l][b] == black) {
+                                ableToGo(l, b, white);
                             }
                         }
                     }
-                    break;
+                    flag = false;
+                    repaint();
                 }
             }
-            repaint();
         }
     }
     //метод отрисовки поля 8х8
@@ -129,7 +171,7 @@ public class Game extends JComponent {
             }
         }
         for (int i = 0; i < possible_moves.size(); i += 2) {
-            drawPossibleBlack(possible_moves.get(i + 1), possible_moves.get(i), graphics);
+            drawPossible(possible_moves.get(i + 1), possible_moves.get(i), graphics);
         }
     }
     //доступные ходы для черных
@@ -225,7 +267,7 @@ public class Game extends JComponent {
         }
     }
 
-    public void drawPossibleBlack(int i, int j, Graphics graphics) {
+    public void drawPossible(int i, int j, Graphics graphics) {
         graphics.setColor(Color.black);
         int d_height = getHeight() / 8;
         int d_width = getWidth() / 8;
