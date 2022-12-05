@@ -108,7 +108,7 @@ public class Game extends JComponent {
                         repaint();
                     }
                 }
-                if (flag == true) {
+                if (flag == true && !possible_moves.isEmpty()) {
                     i = possible_moves.get(0);
                     j = possible_moves.get(1);
                     field[i][j] = white;
